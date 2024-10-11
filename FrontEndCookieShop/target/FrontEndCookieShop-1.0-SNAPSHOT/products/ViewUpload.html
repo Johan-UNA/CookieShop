@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <title>Crear Producto</title>
+</head>
+<body>
+<h2 class="mb-4">Creación de Producto</h2>
+<form id="productForm" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre del Producto:</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="descripcion" class="form-label">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" class="form-control" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="precio" class="form-label">Precio:</label>
+        <input type="number" id="precio" name="precio" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="fotos" class="form-label">Subir Fotos:</label>
+        <input type="file" id="fotos" name="fotos" class="form-control" accept="image/*" multiple>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+</form>
+
+<div id="resultMessage"></div>
+<script src="../js/productsUpload.js"></script>
+</body>
+</html>
