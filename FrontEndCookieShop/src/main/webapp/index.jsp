@@ -24,6 +24,9 @@
 
 <a href="admin/ViewSolicitudes.html"> Solicitudes</a><br>
 <a href="products/ViewProducts.html"> Productos</a><br>
-<a href="products/ViewUpload.html"> Subir Productos</a>
+<a href="products/ViewUpload.html"> Subir Productos</a><br>
+<a href="login/ViewLogin.html"> Login</a>
+<br>
+<button type="button" onclick="window.location.href='login/ViewRegister.html?type=usuario'">Registro Usuario</button>
 </body>
 </html>

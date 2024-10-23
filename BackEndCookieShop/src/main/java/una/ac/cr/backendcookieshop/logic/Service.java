@@ -46,6 +46,9 @@ public class Service {
     public void productoSave(Producto producto) {productoRepository.save(producto); }
     public void fotoProductoSave(Fotoproducto foto) {fotoProductoRepository.save(foto); }
     public List<Fotoproducto> fotoProductoFindByIdProducto(Producto producto) { return fotoProductoRepository.findByIdProducto(producto); }
+    public boolean userExistsById(String id) {
+        return usuarioRepository.existsByIdUsuario(id) || clienteRepository.existsByIdCliente(id);
+    }
 
 
 //    @PostConstruct

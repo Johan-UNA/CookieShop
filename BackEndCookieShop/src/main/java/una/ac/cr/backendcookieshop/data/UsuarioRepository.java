@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface UsuarioRepository extends CrudRepository<Usuario, String> {
     Optional<Usuario> findByIdUsuario(String id);
     List<Usuario> findByEstado(String estado);
+    boolean existsByIdUsuario(String IdUsuario);
 }
