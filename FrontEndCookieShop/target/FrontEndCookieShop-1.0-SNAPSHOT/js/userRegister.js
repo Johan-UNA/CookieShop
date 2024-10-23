@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const userType = urlParams.get('type') || 'usuario'; // Default to 'usuario'
+    const userType = urlParams.get('type') || 'usuario';
     console.log("User Type: ", userType); // Log user type
 
     renderForm(userType);
@@ -57,6 +57,12 @@ document.addEventListener("DOMContentLoaded", function() {
             event.preventDefault();
             console.log("Form submitted"); // Log form submission
 
+            const email = document.getElementById("email").value;
+            if (!validateEmail(email)) {
+                showModal('Error', 'Por favor, ingrese un correo electrónico válido con al menos un dominio.');
+                return;
+            }
+
             const user = userType === 'cliente' ? getClienteData() : getUsuarioData();
             console.log("User Data: ", user); // Log user data
 
@@ -79,6 +85,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     showModal('Error', error.message);
                 });
         });
+    }
+
+    function validateEmail(email) {
+        const parts = email.split('@');
+        return parts.length === 2 && parts[1].split('.').length > 1;
     }
 
     function getUsuarioData() {

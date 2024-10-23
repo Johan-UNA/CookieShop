@@ -2,10 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 </head>
 <body>
+<form id="loginForm">
+    <div class="mb-3">
+        <label for="usuario" class="form-label">Usuario:</label>
+        <input type="text" id="usuario" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Contraseña:</label>
+        <input type="password" id="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    <div id="errorMessage" class="text-danger"></div>
+</form>
 <button type="button" onclick="window.location.href='ViewRegister.html?type=usuario'">Registro Usuario</button>
 <button type="button" onclick="window.location.href='ViewRegister.html?type=cliente'">Registro Cliente</button>
+<script src="../js/login.js"></script>
 </body>
 </html>

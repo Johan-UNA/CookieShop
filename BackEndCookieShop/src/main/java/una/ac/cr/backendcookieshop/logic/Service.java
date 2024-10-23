@@ -33,8 +33,8 @@ public class Service {
     public Iterable<Cliente> clienteFindAll() { return clienteRepository.findAll(); }
 
     public Iterable<Usuario> usuarioFindAll() { return usuarioRepository.findAll(); }
-    public Optional<Cliente> clienteFindById(String id) { return clienteRepository.findById(id); }
-    public Optional<Usuario> usuarioFindById(String id) { return usuarioRepository.findById(id); }
+    public Optional<Cliente> clienteFindById(String id) { return clienteRepository.findByIdCliente(id); }
+    public Optional<Usuario> usuarioFindById(String id) { return usuarioRepository.findByIdUsuario(id); }
     public Iterable<Producto> productoFindAll() { return productoRepository.findAll(); }
     public Optional<Producto> productoFindById(int id) { return productoRepository.findById(id); }
     public List<Usuario> usuarioFindByEstado(String estado) { return usuarioRepository.findByEstado(estado); }
