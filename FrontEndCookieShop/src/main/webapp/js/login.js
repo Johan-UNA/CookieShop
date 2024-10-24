@@ -1,9 +1,3 @@
-let globalState = {
-    user: null,
-    role: null
-};
-
-// Login Script
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -25,17 +19,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then(data => {
-                globalState.user = data.usuario; // Store user info
-                globalState.role = data.role; // Store user role
-                console.log("Login successful", globalState);
+                globalState.user = data.usuario;
+                globalState.role = data.role;
+
+                localStorage.setItem('globalState', JSON.stringify(globalState));
+
+                updateHeader();
+
                 if (data.estado === "activo") {
-                    window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.jsp'; // Redirect to home page for active users
+                    window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.html';
                 } else {
                     window.location.href = '/datos.html';
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
                 document.getElementById("errorMessage").textContent = error.message; // Display error
             });
     });
