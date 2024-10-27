@@ -18,6 +18,7 @@ const roleOptions = {
     cliente: [
         { path: 'products/ViewProducts', display: 'Productos' },
         { path: 'user/Profile', display: 'Ordenes' },
+        { path: 'order/CreateOrder', display: 'Crear Orden' },
         { path: '#', display: 'Logout', isLogout: true }
     ],
     guest: [
@@ -31,7 +32,7 @@ function renderNavbar() {
     const logoUrl = `${window.location.origin}/FrontEndCookieShop-1.0-SNAPSHOT/img/logo.jpeg`;
     const navbarHtml = `
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="${window.location.origin}/FrontEndCookieShop-1.0-SNAPSHOT/index.jsp">
+            <a class="navbar-brand" href="${window.location.origin}/FrontEndCookieShop-1.0-SNAPSHOT/index.html">
                 <img src="${logoUrl}" alt="Logo" style="height: 30px;">
             </a>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
@@ -58,7 +59,7 @@ function updateHeader() {
             link.href = '#';
             link.onclick = handleLogout;
         } else {
-            link.href = window.location.origin + path; 
+            link.href = window.location.origin + path;
         }
         link.textContent = option.display;
         link.className = 'nav-link';
