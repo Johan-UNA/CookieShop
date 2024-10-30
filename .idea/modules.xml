@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BackEndCookieShop/BackEndCookieShop.iml" filepath="$PROJECT_DIR$/BackEndCookieShop/BackEndCookieShop.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/CookieShop.iml" filepath="$PROJECT_DIR$/.idea/CookieShop.iml" />
     </modules>
   </component>

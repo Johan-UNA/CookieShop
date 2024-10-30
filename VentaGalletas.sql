@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS Cliente (
     apellido VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
-    telefono VARCHAR(20)
+    telefono VARCHAR(20),
+	estado ENUM('activo', 'datos') DEFAULT 'activo'
 );
 
 -- Tabla de Direccion (para los clientes)
@@ -51,6 +52,15 @@ CREATE TABLE IF NOT EXISTS FotoProducto (
     id_producto INT,
     foto VARCHAR(255) NOT NULL,
     FOREIGN KEY (id_producto) REFERENCES Producto(id_producto) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Calificacion (
+    id_calificacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto INT NOT NULL,
+    id_cliente VARCHAR(15) NOT NULL,
+    calificacion INT CHECK (calificacion >= 1 AND calificacion <= 5),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
 );
 
 CREATE TABLE IF NOT EXISTS Orden (

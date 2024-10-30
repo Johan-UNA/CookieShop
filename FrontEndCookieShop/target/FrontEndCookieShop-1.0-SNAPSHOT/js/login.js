@@ -25,11 +25,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem('globalState', JSON.stringify(globalState));
 
                 updateHeader();
-
-                if (data.estado === "activo") {
+                if(data.estado === "inactivo"){
+                    document.getElementById("errorMessage").textContent = "Su cuenta esta inactiva";
+                }
+                else if (data.estado === "activo") {
                     window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.html';
                 } else {
-                    window.location.href = '/datos.html';
+                    window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/login/ViewDatos.html';
                 }
             })
             .catch(error => {

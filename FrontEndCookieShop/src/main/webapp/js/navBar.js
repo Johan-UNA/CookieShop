@@ -41,11 +41,9 @@ function renderNavbar() {
         </nav>
     `;
 
-    // Insert the navbar HTML at the beginning of the body
     document.body.insertAdjacentHTML('afterbegin', navbarHtml);
 }
 
-// Function to update the header based on user role
 function updateHeader() {
     const header = document.getElementById('header');
     header.innerHTML = ''; // Clear existing options

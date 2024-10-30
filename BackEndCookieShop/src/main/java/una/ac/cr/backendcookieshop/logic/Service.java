@@ -28,7 +28,6 @@ public class Service {
     private OrdenRepository ordenRepository;
     @Autowired
     private DetalleOrdenRepository detalleOrdenRepository;
-    private Map<String, Provincia> provincias;
 
     public Iterable<Cliente> clienteFindAll() { return clienteRepository.findAll(); }
 
@@ -46,41 +45,18 @@ public class Service {
     public void productoSave(Producto producto) {productoRepository.save(producto); }
     public void fotoProductoSave(Fotoproducto foto) {fotoProductoRepository.save(foto); }
     public List<Fotoproducto> fotoProductoFindByIdProducto(Producto producto) { return fotoProductoRepository.findByIdProducto(producto); }
+    public boolean usuarioExistsById(String idUsuario) { return usuarioRepository.existsByIdUsuario(idUsuario); }
     public boolean userExistsById(String id) {
         return usuarioRepository.existsByIdUsuario(id) || clienteRepository.existsByIdCliente(id);
     }
 
-
-//    @PostConstruct
-//    public void cargarDatos() throws IOException {
-//        ObjectMapper mapper = new ObjectMapper();
-//        InputStream jsonStream = getClass().getResourceAsStream("/static/json/provincias_cantones_distritos_costa_rica.json");
-//        if (jsonStream == null) {
-//            throw new IOException("Archivo JSON no encontrado");
-//        }
-//        // Leer el archivo JSON y mapear a la estructura de datos
-//        provincias = mapper.readValue(jsonStream, mapper.getTypeFactory().constructMapType(Map.class, String.class, Provincia.class));
-//    }
-
-    public Map<String, Provincia> getProvincias() {
-        return provincias;
+    public boolean esDireccionValida(Direccion direccion) {
+        return direccion.getProvincia() != null && !direccion.getProvincia().isEmpty() &&
+                direccion.getCanton() != null && !direccion.getCanton().isEmpty() &&
+                direccion.getDistrito() != null && !direccion.getDistrito().isEmpty() &&
+                direccion.getDescripcion() != null && !direccion.getDescripcion().isEmpty();
     }
 
-    // Métodos para Órdenes
-    public Iterable<Orden> ordenFindAll() { return ordenRepository.findAll(); }
-    public Optional<Orden> ordenFindById(Integer id) { return ordenRepository.findById(id); }
-
-    public void cambiarEstadoOrden(Integer idOrden, String nuevoEstado) {
-        Optional<Orden> ordenOpt = ordenRepository.findById(idOrden);
-        if (ordenOpt.isPresent()) {
-            Orden orden = ordenOpt.get();
-            if ("cancelado".equals(orden.getEstado()) || "entregado".equals(orden.getEstado())) {
-                throw new IllegalStateException("No se puede cambiar el estado de una orden ya entregada o cancelada.");
-            }
-            orden.setEstado(nuevoEstado);
-            ordenRepository.save(orden);
-        }
-    }
     // Método para obtener todas las órdenes pendientes
     public Iterable<Orden> obtenerOrdenesPorEstado(String estado) {
         return ordenRepository.findByEstado(estado);

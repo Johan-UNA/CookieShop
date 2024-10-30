@@ -1,6 +1,7 @@
 package una.ac.cr.backendcookieshop.logic;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -32,6 +33,30 @@ public class Cliente {
 
     @OneToMany(mappedBy = "idCliente")
     private Set<Orden> ordens = new LinkedHashSet<>();
+
+    @ColumnDefault("'activo'")
+    @Lob
+    @Column(name = "estado")
+    private String estado;
+
+    @OneToMany(mappedBy = "idCliente")
+    private Set<Calificacion> calificacions = new LinkedHashSet<>();
+
+    public Set<Calificacion> getCalificacions() {
+        return calificacions;
+    }
+
+    public void setCalificacions(Set<Calificacion> calificacions) {
+        this.calificacions = calificacions;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
     public String getIdCliente() {
         return idCliente;

@@ -32,6 +32,17 @@ public class Producto {
     @OneToMany(mappedBy = "idProducto")
     private Set<Fotoproducto> fotoproductos = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "idProducto")
+    private Set<Calificacion> calificacions = new LinkedHashSet<>();
+
+    public Set<Calificacion> getCalificacions() {
+        return calificacions;
+    }
+
+    public void setCalificacions(Set<Calificacion> calificacions) {
+        this.calificacions = calificacions;
+    }
+
     public Integer getId() {
         return id;
     }
