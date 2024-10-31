@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function initializeOrderTable() {
         const orderContainer = document.getElementById('orderContainer');
         orderContainer.innerHTML = `
+            <p>La cantidad maxima por producto es 100</p>
             <table class="table">
                 <thead>
                     <tr>
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.querySelectorAll(".quantity-input").forEach(input => {
-            input.addEventListener("input", (event) => {
+            input.addEventListener("blur", (event) => {
                 updateQuantity(event);
             });
         });
@@ -171,16 +172,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateQuantity(event) {
         const index = event.target.dataset.index;
-        const quantity = parseInt(event.target.value);
+        let quantity = parseInt(event.target.value);
 
-        if (quantity < 1 || quantity > 100) {
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 1;
             event.target.nextElementSibling.classList.remove("d-none");
-            return;
+            event.target.nextElementSibling.textContent = "La cantidad mínima es 1.";
+        } else if (quantity > 100) {
+            quantity = 100;
+            event.target.nextElementSibling.classList.remove("d-none");
+            event.target.nextElementSibling.textContent = "La cantidad máxima es 100.";
         } else {
             event.target.nextElementSibling.classList.add("d-none");
         }
 
+        // Set the validated quantity back into the input field
+        event.target.value = quantity;
         orderItems[index].cantidad = quantity;
+
+        // Update subtotal display for this row
         const subtotalCell = event.target.closest("tr").querySelector(".subtotal");
         subtotalCell.textContent = `$${(orderItems[index].precio * quantity).toFixed(2)}`;
 
@@ -199,6 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function submitOrder() {
         const medioPago = document.getElementById("medioPago").value;
+        const invalidQuantities = orderItems.filter(item => item.cantidad < 1 || item.cantidad > 100);
+
+        if (invalidQuantities.length > 0) {
+            document.getElementById("orderMessage").textContent = "Las cantidades deben estar entre 1 y 100.";
+            return;
+        }
+
         const orderData = {
             idUsuario: globalState.user,
             medioPago: medioPago,
@@ -212,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fetch("http://localhost:8080/api/order/createOrder", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderData)
         })
             .then(response => {
@@ -233,4 +250,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("orderMessage").textContent = "Error al crear la orden.";
             });
     }
+
 });

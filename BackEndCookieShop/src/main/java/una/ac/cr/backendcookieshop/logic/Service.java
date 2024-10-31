@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service("service")
 public class Service {
@@ -28,9 +29,12 @@ public class Service {
     private OrdenRepository ordenRepository;
     @Autowired
     private DetalleOrdenRepository detalleOrdenRepository;
+    @Autowired
+    private CalificacionRepository calificacionRepository;
+    @Autowired
+    private FacturaRepository facturaRepository;
 
     public Iterable<Cliente> clienteFindAll() { return clienteRepository.findAll(); }
-
     public Iterable<Usuario> usuarioFindAll() { return usuarioRepository.findAll(); }
     public Optional<Cliente> clienteFindById(String id) { return clienteRepository.findByIdCliente(id); }
     public Optional<Usuario> usuarioFindById(String id) { return usuarioRepository.findByIdUsuario(id); }
@@ -49,6 +53,54 @@ public class Service {
     public boolean userExistsById(String id) {
         return usuarioRepository.existsByIdUsuario(id) || clienteRepository.existsByIdCliente(id);
     }
+    public Optional<Factura> facturaFindById(int id){return facturaRepository.findById(id);}
+    public List<Factura> getFacturasByCliente(String idCliente){
+        return facturaRepository.findByIdOrden_IdCliente(clienteRepository.findByIdCliente(idCliente).get());
+    }
+    public List<Factura> getFacturasByUsuario(String idUsuario){
+        return facturaRepository.findByIdOrden_IdUsuario(usuarioRepository.findByIdUsuario(idUsuario).get());
+    }
+
+    public OrderDTO convertToOrderDTO(Orden orden) {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setIdUsuario(orden.getIdUsuario().getIdUsuario());
+        orderDTO.setNombreUsuario(orden.getIdUsuario().getNombre() + " " + orden.getIdUsuario().getApellido());
+        orderDTO.setMedioPago(orden.getMedioPago());
+        orderDTO.setTotal(orden.getTotal());
+
+        ClienteDTO clienteDTO = new ClienteDTO();
+        clienteDTO.setIdCliente(orden.getIdCliente().getIdCliente());
+        clienteDTO.setNombre(orden.getIdCliente().getNombre());
+        clienteDTO.setApellido(orden.getIdCliente().getApellido());
+        clienteDTO.setEmail(orden.getIdCliente().getEmail());
+        clienteDTO.setTelefono(orden.getIdCliente().getTelefono());
+        orderDTO.setCliente(clienteDTO);
+
+        List<DetalleOrdenDTO> detalleDTOs = orden.getDetalleordens().stream().map(detalle -> {
+            DetalleOrdenDTO detalleDTO = new DetalleOrdenDTO();
+            detalleDTO.setIdProducto(detalle.getIdProducto().getId());
+            detalleDTO.setNombreProducto(detalle.getIdProducto().getNombre());
+            detalleDTO.setDescripcionProducto(detalle.getIdProducto().getDescripcion());
+            detalleDTO.setPrecioUnitario(detalle.getIdProducto().getPrecio());
+            detalleDTO.setCantidad(detalle.getCantidad());
+            detalleDTO.setSubtotal(detalle.getSubtotal());
+            return detalleDTO;
+        }).collect(Collectors.toList());
+
+        orderDTO.setDetalleordens(detalleDTOs);
+        return orderDTO;
+    }
+
+    public FacturaDTO convertToFacturaDTO(Factura factura) {
+        FacturaDTO facturaDTO = new FacturaDTO();
+        facturaDTO.setIdFactura(factura.getId());
+        facturaDTO.setFechaCreacion(factura.getFechaCreacion());
+        facturaDTO.setOrden(convertToOrderDTO(factura.getIdOrden()));
+        return facturaDTO;
+    }
+
+
+    public List<Factura> facturasFindAll(){ return (List<Factura>) facturaRepository.findAll();}
 
     public boolean esDireccionValida(Direccion direccion) {
         return direccion.getProvincia() != null && !direccion.getProvincia().isEmpty() &&

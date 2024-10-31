@@ -63,6 +63,7 @@ public class LoginController {
                 User user1 = new User();
                 user1.setUsuario(cliente.get().getIdCliente());
                 user1.setRole("cliente");
+                user1.setEstado(cliente.get().getEstado());
                 return ResponseEntity.ok(user1);
             }
 

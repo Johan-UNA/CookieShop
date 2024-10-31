@@ -54,7 +54,7 @@ function updateHeader() {
         const link = document.createElement('a');
         const path = `/FrontEndCookieShop-1.0-SNAPSHOT/${option.path}.html`;
         if (option.isLogout) {
-            link.href = '#';
+            link.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.html';
             link.onclick = handleLogout;
         } else {
             link.href = window.location.origin + path;
@@ -70,7 +70,7 @@ function handleLogout() {
     globalState.user = null;
     globalState.role = 'guest';
     localStorage.removeItem('globalState');
-    updateHeader();
+    window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.html';
 }
 
 renderNavbar();
