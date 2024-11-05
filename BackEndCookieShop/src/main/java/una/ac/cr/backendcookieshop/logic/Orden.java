@@ -49,6 +49,17 @@ public class Orden {
     @OneToMany(mappedBy = "idOrden")
     private Set<Factura> facturas = new LinkedHashSet<>();
 
+    @Column(name = "fecha_entrega", nullable = false)
+    private Instant fechaEntrega;
+
+    public Instant getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(Instant fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
     public Integer getId() {
         return id;
     }

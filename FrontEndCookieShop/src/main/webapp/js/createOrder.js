@@ -110,24 +110,84 @@ document.addEventListener("DOMContentLoaded", () => {
     function initializeOrderForm() {
         const formContainer = document.getElementById('formContainer');
         formContainer.innerHTML = `
-            <form id="orderForm">
-                <label for="medioPago">Medio de Pago</label>
-                <select id="medioPago" name="medioPago" required class="form-control">
-                    <option value="" disabled selected>Seleccione una opción</option>
-                    <option value="Efectivo">Efectivo</option>
-                    <option value="Tarjeta">Tarjeta</option>
-                    <option value="Sinpe Movil">Sinpe Movil</option>
-                </select>
-                <button type="submit" class="btn btn-success mt-2">Crear orden</button>
-            </form>
-            <div id="orderMessage" class="mt-3"></div>
-        `;
+        <form id="orderForm">
+            <label for="medioPago">Medio de Pago</label>
+            <select id="medioPago" name="medioPago" required class="form-control">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Sinpe Movil">Sinpe Movil</option>
+            </select>
+            
+            <label for="deliveryDate">Fecha de Entrega</label>
+            <input type="date" id="deliveryDate" name="deliveryDate" class="form-control" required>
+            <small class="text-danger d-none" id="dateError">La fecha de entrega debe ser entre mañana y en las próximas 2 semanas.</small>
+            
+            <label for="deliveryTime">Hora de Entrega</label>
+            <input type="time" id="deliveryTime" name="deliveryTime" class="form-control" required>
+            <small class="text-danger d-none" id="timeError">La hora debe estar entre las 07:00 y 18:00.</small>
+            
+            <button type="submit" class="btn btn-success mt-2">Crear orden</button>
+        </form>
+        <div id="orderMessage" class="mt-3"></div>
+    `;
+
+        // Asignar validación para la fecha de entrega
+        const deliveryDate = document.getElementById("deliveryDate");
+        const deliveryTime = document.getElementById("deliveryTime");
+        const dateError = document.getElementById("dateError");
+        const timeError = document.getElementById("timeError");
+
+        deliveryDate.addEventListener("change", validateDeliveryDate);
+        deliveryTime.addEventListener("change", validateDeliveryTime);
 
         document.getElementById("orderForm").addEventListener("submit", (event) => {
             event.preventDefault();
-            submitOrder();
+
+            // Validar fecha y hora antes de enviar el formulario
+            const isDateValid = validateDeliveryDate();
+            const isTimeValid = validateDeliveryTime();
+
+            if (isDateValid && isTimeValid) {
+                submitOrder();
+            }
         });
+
+        function validateDeliveryDate() {
+            const selectedDate = new Date(deliveryDate.value);
+            const currentDate = new Date();
+
+            // Validar que la fecha de entrega sea de al menos 12 horas en el futuro y no más de 2 semanas
+            const minDate = new Date();
+            minDate.setHours(currentDate.getHours() + 12);
+
+            const maxDate = new Date();
+            maxDate.setDate(currentDate.getDate() + 14);
+
+            if (selectedDate < minDate || selectedDate > maxDate) {
+                dateError.classList.remove("d-none");
+                return false;
+            } else {
+                dateError.classList.add("d-none");
+                return true;
+            }
+        }
+
+        function validateDeliveryTime() {
+            const selectedTime = deliveryTime.value;
+            const minTime = "07:00";
+            const maxTime = "18:00";
+
+            if (selectedTime < minTime || selectedTime > maxTime) {
+                timeError.classList.remove("d-none");
+                return false;
+            } else {
+                timeError.classList.add("d-none");
+                return true;
+            }
+        }
     }
+
 
     function fetchOrderItems() {
         orderItems = [
@@ -215,9 +275,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const deliveryDate = document.getElementById("deliveryDate").value;
+        const deliveryTime = document.getElementById("deliveryTime").value;
+        const deliveryDateTime = new Date(`${deliveryDate}T${deliveryTime}:00`).toISOString();
+
         const orderData = {
             idUsuario: globalState.user,
             medioPago: medioPago,
+            fechaEntrega: deliveryDateTime,
             detalleordens: orderItems.map(item => ({
                 idProducto: item.idProducto,
                 cantidad: item.cantidad,

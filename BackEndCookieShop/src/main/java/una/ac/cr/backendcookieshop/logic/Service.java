@@ -1,15 +1,10 @@
 package una.ac.cr.backendcookieshop.logic;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import una.ac.cr.backendcookieshop.data.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,7 +30,22 @@ public class Service {
     private FacturaRepository facturaRepository;
 
     public Iterable<Cliente> clienteFindAll() { return clienteRepository.findAll(); }
-    public Iterable<Usuario> usuarioFindAll() { return usuarioRepository.findAll(); }
+    public List<UserDTO> usuarioFindAll() {
+        Iterable<Usuario> iterable = usuarioRepository.findAll();
+        List<UserDTO> list = new ArrayList<>();
+        for (Usuario usuario : iterable) {
+            if (usuario.getRol().equals("dependiente")) {
+                UserDTO usuarioDTO = new UserDTO();
+                usuarioDTO.setIdUsuario(usuario.getIdUsuario());
+                usuarioDTO.setNombre(usuario.getNombre());
+                usuarioDTO.setApellido(usuario.getApellido());
+                usuarioDTO.setEmail(usuario.getEmail());
+                usuarioDTO.setEstado(usuario.getEstado());
+                list.add(usuarioDTO);
+            }
+        }
+        return list;
+    }
     public Optional<Cliente> clienteFindById(String id) { return clienteRepository.findByIdCliente(id); }
     public Optional<Usuario> usuarioFindById(String id) { return usuarioRepository.findByIdUsuario(id); }
     public Iterable<Producto> productoFindAll() { return productoRepository.findAll(); }

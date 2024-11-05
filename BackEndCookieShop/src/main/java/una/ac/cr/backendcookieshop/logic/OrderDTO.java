@@ -1,12 +1,14 @@
 package una.ac.cr.backendcookieshop.logic;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 public class OrderDTO {
     private String idUsuario;
     private String nombreUsuario;
     private String medioPago;
+    private Instant fechaEntrega;
     private ClienteDTO cliente;
     private List<DetalleOrdenDTO> detalleordens;
     private BigDecimal total;
@@ -58,6 +60,14 @@ public class OrderDTO {
 
     public void setTotal(BigDecimal total) {
         this.total = total;
+    }
+
+    public Instant getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(Instant fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
     }
 }
 

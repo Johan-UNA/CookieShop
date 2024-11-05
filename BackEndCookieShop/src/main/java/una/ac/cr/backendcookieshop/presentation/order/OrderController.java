@@ -32,6 +32,7 @@ public class OrderController {
             cliente.ifPresent(orden::setIdCliente);
             orden.setEstado("pendiente");
             orden.setFechaCreacion(Instant.now().minus(Duration.ofHours(6)));
+            orden.setFechaEntrega(orderDTO.getFechaEntrega().minus(Duration.ofHours(6)));
             orden.setMedioPago(orderDTO.getMedioPago());
             orden.setTotal(total);
             service.ordenSave(orden);
