@@ -67,11 +67,12 @@ CREATE TABLE IF NOT EXISTS Orden (
     id_orden INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente VARCHAR(15),
     id_usuario VARCHAR(15) DEFAULT NULL,
-    estado ENUM('pendiente', 'en proceso', 'entregado', 'cancelado') DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'en proceso', 'lista', 'entregado', 'cancelado') DEFAULT 'pendiente',
     total DECIMAL(10, 2) NOT NULL,
     medio_pago VARCHAR(100) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	fecha_entrega TIMESTAMP NOT NULL,
+	motivo_cancelacion VARCHAR(250),
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE SET NULL
 );

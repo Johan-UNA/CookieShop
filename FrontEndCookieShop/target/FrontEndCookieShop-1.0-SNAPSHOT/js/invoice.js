@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchFacturas();
 
-    // Función para obtener y mostrar la lista de facturas
     function fetchFacturas() {
         const endpoint = `http://localhost:8080/api/factura/getFacturas?userId=${userId}&role=${role}`;
 
@@ -14,17 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { 'Content-Type': 'application/json' }
         })
             .then(response => {
-                console.log("Estado de la respuesta:", response.status);
                 return response.json();
             })
             .then(facturas => {
-                console.log("Datos de facturas recibidos:", facturas);
                 mostrarListaFacturas(facturas);
             })
             .catch(error => console.error('Error al obtener facturas:', error));
     }
 
-    // Función para mostrar la lista de facturas
     function mostrarListaFacturas(facturas) {
         const container = document.getElementById("facturas-container");
         container.innerHTML = '';
@@ -59,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         container.appendChild(table);
 
-        // Añadir el evento a los botones
         const botonesVerFactura = document.querySelectorAll('.ver-factura');
         botonesVerFactura.forEach(boton => {
             boton.addEventListener('click', function() {
@@ -69,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Función para obtener y mostrar el detalle de la factura
     function verFactura(idFactura) {
         fetch(`http://localhost:8080/api/factura/getFactura?idFactura=${idFactura}`, {
             method: 'GET',

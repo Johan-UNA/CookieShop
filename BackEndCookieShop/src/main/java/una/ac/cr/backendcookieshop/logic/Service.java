@@ -44,6 +44,7 @@ public class Service {
     public Optional<Usuario> usuarioFindById(String id) { return usuarioRepository.findByIdUsuario(id); }
     public Iterable<Producto> productoFindAll() { return productoRepository.findAll(); }
     public Optional<Producto> productoFindById(int id) { return productoRepository.findById(id); }
+    public Optional<Orden> ordenFindById(int id) { return ordenRepository.findById(id); }
     public List<Usuario> usuarioFindByEstado(String estado) { return usuarioRepository.findByEstado(estado); }
     public void clienteSave(Cliente cliente) { clienteRepository.save(cliente); }
     public void usuarioSave(Usuario usuario) {usuarioRepository.save(usuario); }
@@ -69,10 +70,18 @@ public class Service {
 
     public OrderDTO convertToOrderDTO(Orden orden) {
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setIdUsuario(orden.getIdUsuario().getIdUsuario());
-        orderDTO.setNombreUsuario(orden.getIdUsuario().getNombre() + " " + orden.getIdUsuario().getApellido());
+        orderDTO.setId(orden.getId());
+        if(orden.getIdUsuario() != null) {
+            orderDTO.setIdUsuario(orden.getIdUsuario().getIdUsuario());
+            orderDTO.setNombreUsuario(orden.getIdUsuario().getNombre() + " " + orden.getIdUsuario().getApellido());
+        }
         orderDTO.setMedioPago(orden.getMedioPago());
         orderDTO.setTotal(orden.getTotal());
+        orderDTO.setFechaEntrega(orden.getFechaEntrega());
+        orderDTO.setEstado(orden.getEstado());
+        if(orden.getEstado().equals("cancelado")){
+            orderDTO.setMotivoCancelacion(orden.getMotivoCancelacion());
+        }
 
         ClienteDTO clienteDTO = new ClienteDTO();
         clienteDTO.setIdCliente(orden.getIdCliente().getIdCliente());
@@ -175,13 +184,43 @@ public class Service {
     }
 
     // Método para obtener todas las órdenes de un cliente específico
-    public Iterable<Orden> obtenerOrdenesPorCliente(String idCliente) {
+    public List<OrderDTO> obtenerOrdenesPorCliente(String idCliente) {
         Optional<Cliente> cliente = clienteRepository.findById(idCliente);
+        List<OrderDTO> ordenes = new ArrayList<>();
         if (cliente.isPresent()) {
-            return ordenRepository.findByIdCliente(cliente.get());
-        } else {
-            return new ArrayList<>(); // Devuelve una lista vacía si el cliente no existe
+            Iterable<Orden> iterable = ordenRepository.findByIdCliente(cliente.get());
+            for(Orden orden : iterable){
+                ordenes.add(convertToOrderDTO(orden));
+            }
         }
+        return ordenes;
     }
+
+    public List<OrderDTO> obtenerOrdenesTodas(){
+        Iterable<Orden> iterable = ordenRepository.findAll();
+        List<OrderDTO> ordenes = new ArrayList<>();
+        for(Orden orden : iterable){
+            ordenes.add(convertToOrderDTO(orden));
+        }
+        return ordenes;
+    }
+
+    public List<OrderDTO> obtenerOrdenesPorProveedor(String idUsuario){
+        Optional<Usuario> usuario = usuarioFindById(idUsuario);
+        List<OrderDTO> ordenes = new ArrayList<>();
+        if (usuario.isPresent()) {
+            Iterable<Orden> iterable = ordenRepository.findByIdUsuarioOrEstado(usuario.get(), "pendiente");
+            for(Orden orden : iterable){
+                ordenes.add(convertToOrderDTO(orden));
+            }
+        }
+        return ordenes;
+    }
+
+    public OrderDTO obtenerOrdenPorId(int idOrden){
+        Optional<Orden> orden = ordenRepository.findById(idOrden);
+        return orden.map(this::convertToOrderDTO).orElse(null);
+    }
+
 }
 

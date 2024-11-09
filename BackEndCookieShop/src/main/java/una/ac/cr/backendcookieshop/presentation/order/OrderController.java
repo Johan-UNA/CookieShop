@@ -22,9 +22,9 @@ public class OrderController {
     @Autowired
     private Service service;
 
-    // Endpoint para crear una nueva orden
     @PostMapping("/createOrder")
     public ResponseEntity<String> createOrder(@RequestBody OrderDTO orderDTO) {
+        System.out.println(orderDTO);
         try {
             Orden orden = new Orden();
             BigDecimal total = orderDTO.getDetalleordens().stream()
@@ -32,14 +32,12 @@ public class OrderController {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             Optional<Cliente> cliente = service.clienteFindById(orderDTO.getIdUsuario());
             cliente.ifPresent(orden::setIdCliente);
-
-            orden.setEstado(EstadoOrden.valueOf("PENDIENTE"));
+            orden.setEstado("pendiente");
             orden.setFechaCreacion(Instant.now().minus(Duration.ofHours(6)));
             orden.setFechaEntrega(orderDTO.getFechaEntrega().minus(Duration.ofHours(6)));
             orden.setMedioPago(orderDTO.getMedioPago());
             orden.setTotal(total);
             service.ordenSave(orden);
-
             for (DetalleOrdenDTO detalle : orderDTO.getDetalleordens()) {
                 Detalleorden ordenDetalle = new Detalleorden();
                 ordenDetalle.setIdOrden(orden);
@@ -64,63 +62,89 @@ public class OrderController {
         }
     }
 
-    // Endpoint para actualizar el estado de una orden
-    @PutMapping("/{id}/updateStatus")
-    public ResponseEntity<String> updateOrderStatus(@PathVariable Integer id,
-                                                    @RequestParam EstadoOrden nuevoEstado,
-                                                    @RequestParam(required = false) String razonCancelacion) {
-        try {
-            Orden orden = service.obtenerOrdenPorId(id).orElseThrow(() -> new Exception("Orden no encontrada"));
-            service.actualizarEstadoOrden(orden, nuevoEstado, razonCancelacion);
+    @PutMapping("/updateStatus")
+    public ResponseEntity<Map<String, String>> updateOrderStatus(@RequestBody EstadoRequest estadoRequest) {
+        Optional<Orden> orderOpt = service.ordenFindById(estadoRequest.getOrderId());
+        Optional<Usuario> userOpt = service.usuarioFindById(estadoRequest.getUserId());
 
-            return ResponseEntity.ok("Estado de la orden actualizado a: " + nuevoEstado);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al actualizar el estado de la orden: " + e.getMessage());
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("message", "Orden no encontrada"));
         }
+
+        Orden order = orderOpt.get();
+
+        String currentStatus = order.getEstado();
+        String newStatus = estadoRequest.getNewStatus();
+
+        // Configura la razón de cancelación, si corresponde
+        if ("cancelado".equals(newStatus) && estadoRequest.getCancellationReason() != null) {
+            order.setMotivoCancelacion(estadoRequest.getCancellationReason());
+        }
+
+        if("pendiente".equals(currentStatus)){
+            order.setIdUsuario(userOpt.get());
+        }
+
+        order.setEstado(newStatus);
+        service.ordenSave(order);
+
+        return ResponseEntity.ok(Collections.singletonMap("message", "Estado de la orden actualizado correctamente"));
     }
 
-    // Endpoint para consultar todas las órdenes de un cliente
-    @GetMapping("/customerOrders")
-    public ResponseEntity<Iterable<OrderDTO>> getCustomerOrders(@RequestParam("clientId") String idCliente) {
+    @GetMapping("/getOrders")
+    public ResponseEntity<List<OrderDTO>> getCustomerOrders(@RequestParam String userId,
+                                                            @RequestParam String role) {
         try {
-            // Obtener las órdenes del cliente
-            Iterable<Orden> ordenes = service.obtenerOrdenesPorCliente(idCliente);
-            Iterable<OrderDTO> orderDTOs = StreamSupport.stream(ordenes.spliterator(), false)
-                    .map(service::convertToOrderDTO)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(orderDTOs);
+            switch (role) {
+                case "cliente" -> {
+                    return ResponseEntity.ok(service.obtenerOrdenesPorCliente(userId));
+                }
+                case "dependiente" -> {
+                    return ResponseEntity.ok(service.obtenerOrdenesPorProveedor(userId));
+                }
+                default -> {
+                    return ResponseEntity.ok(service.obtenerOrdenesTodas());
+                }
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonList(new OrderDTO()));
         }
     }
 
+    @GetMapping("/getOrder")
+    public ResponseEntity<OrderDTO> getOrder(@RequestParam("orderId") Integer orderId) {
+        return ResponseEntity.ok(service.obtenerOrdenPorId(orderId));
+    }
+
+
+
 
     // Endpoint para asignar un proveedor a una orden pendiente
-    @PutMapping("/{id}/assignProvider")
-    public ResponseEntity<String> assignProvider(@PathVariable Integer id) {
-        try {
-            Orden orden = service.obtenerOrdenPorId(id).orElseThrow(() -> new Exception("Orden no encontrada"));
-            Orden ordenConProveedor = service.asignarProveedor(orden);
+//    @PutMapping("/{id}/assignProvider")
+//    public ResponseEntity<String> assignProvider(@PathVariable Integer id) {
+//        try {
+//            Orden orden = service.obtenerOrdenPorId(id).orElseThrow(() -> new Exception("Orden no encontrada"));
+//            Orden ordenConProveedor = service.asignarProveedor(orden);
+//
+//            return ResponseEntity.ok("Proveedor asignado exitosamente a la orden con ID: " + ordenConProveedor.getId());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Error al asignar proveedor a la orden: " + e.getMessage());
+//        }
+//    }
 
-            return ResponseEntity.ok("Proveedor asignado exitosamente a la orden con ID: " + ordenConProveedor.getId());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al asignar proveedor a la orden: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/byStatus")
-    public ResponseEntity<List<Orden>> getOrdersByStatus(@RequestParam EstadoOrden estado) {
-        List<Orden> ordenes = service.obtenerOrdenesPorEstado(estado);
-        return ResponseEntity.ok(ordenes);
-    }
-
-    // Endpoint para obtener todas las órdenes pendientes sin proveedor asignado
-    @GetMapping("/pendingWithoutProvider")
-    public ResponseEntity<List<Orden>> getPendingOrdersWithoutProvider() {
-        List<Orden> ordenesPendientes = service.obtenerOrdenesPendientesSinProveedor();
-        return ResponseEntity.ok(ordenesPendientes);
-    }
+//    @GetMapping("/byStatus")
+//    public ResponseEntity<List<Orden>> getOrdersByStatus(@RequestParam EstadoOrden estado) {
+//        List<Orden> ordenes = service.obtenerOrdenesPorEstado(estado);
+//        return ResponseEntity.ok(ordenes);
+//    }
+//
+//    // Endpoint para obtener todas las órdenes pendientes sin proveedor asignado
+//    @GetMapping("/pendingWithoutProvider")
+//    public ResponseEntity<List<Orden>> getPendingOrdersWithoutProvider() {
+//        List<Orden> ordenesPendientes = service.obtenerOrdenesPendientesSinProveedor();
+//        return ResponseEntity.ok(ordenesPendientes);
+//    }
 }

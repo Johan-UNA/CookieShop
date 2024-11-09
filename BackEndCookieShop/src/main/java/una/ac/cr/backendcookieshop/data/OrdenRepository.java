@@ -3,21 +3,19 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import una.ac.cr.backendcookieshop.logic.Cliente;
 import una.ac.cr.backendcookieshop.logic.Orden;
-import una.ac.cr.backendcookieshop.logic.EstadoOrden;
+import una.ac.cr.backendcookieshop.logic.Usuario;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrdenRepository extends CrudRepository<Orden, Integer> {
-    // Método personalizado para encontrar órdenes por estado
-    List<Orden> findByEstado(EstadoOrden estado);
-
-    // Método personalizado para encontrar órdenes por el ID del cliente
+    Optional<Orden> findById(Integer id);
+    List<Orden> findByEstado(String estado);
     Iterable<Orden> findByIdCliente(Cliente idCliente);
 
-    List<Orden> findOrdenByIdCliente(Cliente cliente);
+    Iterable<Orden> findByIdUsuario(Usuario idUsuario);
 
-    // Nuevo método: encontrar órdenes pendientes sin proveedor asignado
-    List<Orden> findByEstadoAndIdUsuarioIsNull(EstadoOrden estado);
+    Iterable<Orden> findByIdUsuarioOrEstado(Usuario idUsuario, String estado);
 
 }

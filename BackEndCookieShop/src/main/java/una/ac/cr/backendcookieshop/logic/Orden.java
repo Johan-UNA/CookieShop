@@ -52,6 +52,17 @@ public class Orden {
     @Column(name = "fecha_entrega", nullable = false)
     private Instant fechaEntrega;
 
+    @Column(name = "motivo_cancelacion", length = 250)
+    private String motivoCancelacion;
+
+    public String getMotivoCancelacion() {
+        return motivoCancelacion;
+    }
+
+    public void setMotivoCancelacion(String motivoCancelacion) {
+        this.motivoCancelacion = motivoCancelacion;
+    }
+
     public Instant getFechaEntrega() {
         return fechaEntrega;
     }
