@@ -35,13 +35,7 @@ public class Service {
         List<UserDTO> list = new ArrayList<>();
         for (Usuario usuario : iterable) {
             if (usuario.getRol().equals("dependiente")) {
-                UserDTO usuarioDTO = new UserDTO();
-                usuarioDTO.setIdUsuario(usuario.getIdUsuario());
-                usuarioDTO.setNombre(usuario.getNombre());
-                usuarioDTO.setApellido(usuario.getApellido());
-                usuarioDTO.setEmail(usuario.getEmail());
-                usuarioDTO.setEstado(usuario.getEstado());
-                list.add(usuarioDTO);
+                list.add(convertToUsuarioDTO(usuario));
             }
         }
         return list;
@@ -54,10 +48,12 @@ public class Service {
     public void clienteSave(Cliente cliente) { clienteRepository.save(cliente); }
     public void usuarioSave(Usuario usuario) {usuarioRepository.save(usuario); }
     public void ordenSave(Orden orden) {ordenRepository.save(orden); }
+    public void calificacionSave(Calificacion calificacion){ calificacionRepository.save(calificacion);}
     public void detalleOrdenSave(Detalleorden detalleOrden) {detalleOrdenRepository.save(detalleOrden); }
     public void direccionSave(Direccion direccion) { direccionRepository.save(direccion); }
     public void productoSave(Producto producto) {productoRepository.save(producto); }
     public void fotoProductoSave(Fotoproducto foto) {fotoProductoRepository.save(foto); }
+    public void deleteFotoProducto(Fotoproducto foto) {fotoProductoRepository.delete(foto); }
     public List<Fotoproducto> fotoProductoFindByIdProducto(Producto producto) { return fotoProductoRepository.findByIdProducto(producto); }
     public boolean usuarioExistsById(String idUsuario) { return usuarioRepository.existsByIdUsuario(idUsuario); }
     public boolean userExistsById(String id) {
@@ -109,6 +105,60 @@ public class Service {
         return facturaDTO;
     }
 
+    public UserDTO convertToUsuarioDTO(Usuario usuario){
+        UserDTO usuarioDTO = new UserDTO();
+        usuarioDTO.setIdUsuario(usuario.getIdUsuario());
+        usuarioDTO.setNombre(usuario.getNombre());
+        usuarioDTO.setApellido(usuario.getApellido());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setEstado(usuario.getEstado());
+        return usuarioDTO;
+    }
+
+    public ProductoDTO convertToProductoDTO(Producto producto){
+        ProductoDTO productoDTO = new ProductoDTO();
+        productoDTO.setId(producto.getId());
+        productoDTO.setNombre(producto.getNombre());
+        productoDTO.setDescripcion(producto.getDescripcion());
+        productoDTO.setPrecio(producto.getPrecio());
+        for (Fotoproducto foto : producto.getFotoproductos()){
+            productoDTO.getFotoproductos().add(foto);
+        }
+        double averageRating = producto.getCalificacions().stream()
+                .mapToInt(Calificacion::getCalificacion)
+                .average()
+                .orElse(0.0);
+
+        productoDTO.setAverageRating(averageRating);
+        for (Calificacion calificacion : producto.getCalificacions()){
+            CalificacionDTO calificacionDTO = new CalificacionDTO();
+            calificacionDTO.setRating(calificacion.getCalificacion());
+            calificacionDTO.setIdProducto(calificacion.getIdProducto().getId());
+            calificacionDTO.setIdUsuario(calificacion.getIdCliente().getIdCliente());
+            productoDTO.getCalificaciones().add(calificacionDTO);
+        }
+        return productoDTO;
+    }
+
+    public List<ProductoDTO> productoDTOS(){
+        List<Producto> productos = (List<Producto>) productoFindAll();
+        List<ProductoDTO> productoDTOS = new ArrayList<>();
+        for (Producto producto : productos){
+            productoDTOS.add(convertToProductoDTO(producto));
+        }
+        return productoDTOS;
+    }
+
+    public List<Producto> obtenerProductosCompradosPorCliente(Cliente clienteId) {
+        List<Detalleorden> detalleordens = detalleOrdenRepository.findByIdOrden_IdClienteAndIdOrden_Estado(clienteId, "entregado");
+        return detalleordens.stream()
+                .map(Detalleorden::getIdProducto)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Calificacion> calificacionFindByClienteAndProducto(Cliente cliente, Producto producto) {
+        return calificacionRepository.findByIdClienteAndIdProducto(cliente, producto);
+    }
 
     public List<Factura> facturasFindAll(){ return (List<Factura>) facturaRepository.findAll();}
 
