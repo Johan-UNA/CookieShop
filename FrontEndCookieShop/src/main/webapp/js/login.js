@@ -27,13 +27,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem('globalState', JSON.stringify(globalState));
 
                 updateHeader();
-                if(data.estado === "inactivo"){
+                if(data.estado === "desactivado"){
                     document.getElementById("errorMessage").textContent = "Su cuenta esta inactiva";
                 }
                 else if (data.estado === "activo") {
                     window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/index.html';
-                } else {
+                }
+                else if (data.estado === "datos"){
                     window.location.href = window.location.origin + '/FrontEndCookieShop-1.0-SNAPSHOT/login/ViewDatos.html';
+                } else{
+                    document.getElementById("errorMessage").textContent = "Debe esperar a que su solicitud sea aceptada";
                 }
             })
             .catch(error => {

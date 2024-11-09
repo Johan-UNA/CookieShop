@@ -7,8 +7,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -30,9 +28,10 @@ public class Orden {
     @JoinColumn(name = "id_usuario")
     private Usuario idUsuario;
 
-    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'pendiente'")
+    @Lob
     @Column(name = "estado")
-    private EstadoOrden estado = EstadoOrden.PENDIENTE; // Estado inicial por defecto
+    private String estado;
 
     @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
@@ -44,19 +43,22 @@ public class Orden {
     @Column(name = "fecha_creacion")
     private Instant fechaCreacion;
 
-    @Column(name = "fecha_entrega")
-    private LocalDate fechaEntrega;
-
-    @Column(name = "hora_entrega")
-    private LocalTime horaEntrega;
-
     @OneToMany(mappedBy = "idOrden")
     private Set<Detalleorden> detalleordens = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "idOrden")
     private Set<Factura> facturas = new LinkedHashSet<>();
 
-    // Getters y Setters
+    @Column(name = "fecha_entrega", nullable = false)
+    private Instant fechaEntrega;
+
+    public Instant getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public void setFechaEntrega(Instant fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
 
     public Integer getId() {
         return id;
@@ -82,11 +84,11 @@ public class Orden {
         this.idUsuario = idUsuario;
     }
 
-    public EstadoOrden getEstado() {
+    public String getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoOrden estado) {
+    public void setEstado(String estado) {
         this.estado = estado;
     }
 
@@ -114,22 +116,6 @@ public class Orden {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public LocalDate getFechaEntrega() {
-        return fechaEntrega;
-    }
-
-    public void setFechaEntrega(LocalDate fechaEntrega) {
-        this.fechaEntrega = fechaEntrega;
-    }
-
-    public LocalTime getHoraEntrega() {
-        return horaEntrega;
-    }
-
-    public void setHoraEntrega(LocalTime horaEntrega) {
-        this.horaEntrega = horaEntrega;
-    }
-
     public Set<Detalleorden> getDetalleordens() {
         return detalleordens;
     }
@@ -145,4 +131,5 @@ public class Orden {
     public void setFacturas(Set<Factura> facturas) {
         this.facturas = facturas;
     }
+
 }

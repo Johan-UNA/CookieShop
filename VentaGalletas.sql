@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Usuario (
     email VARCHAR(100) UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
     rol ENUM('administrador', 'dependiente') NOT NULL,
-    estado ENUM('activo', 'inactivo', 'datos') DEFAULT 'activo'
+    estado ENUM('activo', 'inactivo', 'datos', 'desactivado') DEFAULT 'activo'
 );
 
 -- Tabla de Cliente
@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS Orden (
     total DECIMAL(10, 2) NOT NULL,
     medio_pago VARCHAR(100) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	fecha_entrega TIMESTAMP NOT NULL,
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE SET NULL
 );

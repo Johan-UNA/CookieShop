@@ -8,6 +8,7 @@ public class UserDTO {
     private String apellido;
     private String email;
     private String telefono;
+    private String estado;
     private List<Direccion> addresses; // Lista de direcciones del usuario
 
     public String getIdUsuario() {
@@ -56,6 +57,14 @@ public class UserDTO {
 
     public void setAddresses(List<Direccion> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
 

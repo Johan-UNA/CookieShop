@@ -5,9 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import una.ac.cr.backendcookieshop.logic.*;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -16,7 +14,6 @@ public class UserController {
     @Autowired
     Service service;
 
-    // Endpoint para obtener información del usuario según su ID
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable String userId) {
         try {
@@ -56,6 +53,11 @@ public class UserController {
             principal.setIdCliente(cliente);
             service.clienteSave(cliente);
             service.direccionSave(principal);
+            if(userDto.getAddresses().get(1) != null && service.esDireccionValida(userDto.getAddresses().get(1))) {
+                Direccion alternativa = userDto.getAddresses().get(1);
+                alternativa.setIdCliente(cliente);
+                service.direccionSave(alternativa);
+            }
             return ResponseEntity.ok("Perfil de cliente actualizado exitosamente");
 
         } catch (Exception ex) {

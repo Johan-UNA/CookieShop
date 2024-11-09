@@ -1,23 +1,19 @@
 package una.ac.cr.backendcookieshop.logic;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Instant;
 import java.util.List;
 
 public class OrderDTO {
     private String idUsuario;
     private String nombreUsuario;
     private String medioPago;
+    private Instant fechaEntrega;
     private ClienteDTO cliente;
     private List<DetalleOrdenDTO> detalleordens;
     private BigDecimal total;
-    private LocalDate fechaEntrega;
-    private LocalTime horaEntrega;
-    private EstadoOrden estado; // Estado de la orden
 
     // Getters y Setters
-
     public String getIdUsuario() {
         return idUsuario;
     }
@@ -66,27 +62,12 @@ public class OrderDTO {
         this.total = total;
     }
 
-    public LocalDate getFechaEntrega() {
+    public Instant getFechaEntrega() {
         return fechaEntrega;
     }
 
-    public void setFechaEntrega(LocalDate fechaEntrega) {
+    public void setFechaEntrega(Instant fechaEntrega) {
         this.fechaEntrega = fechaEntrega;
     }
-
-    public LocalTime getHoraEntrega() {
-        return horaEntrega;
-    }
-
-    public void setHoraEntrega(LocalTime horaEntrega) {
-        this.horaEntrega = horaEntrega;
-    }
-
-    public EstadoOrden getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoOrden estado) {
-        this.estado = estado;
-    }
 }
+
