@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 
 public class DetalleOrdenDTO {
     private Integer idProducto;
-    private String nombreProducto; // Nombre del producto
-    private String descripcionProducto; // Descripción del producto
+    private String nombreProducto;
+    private String descripcionProducto;
     private Integer cantidad;
     private BigDecimal subtotal;
     private BigDecimal precioUnitario;
 
+    // Getters y Setters
     public Integer getIdProducto() {
         return idProducto;
     }

@@ -17,7 +17,7 @@ const roleOptions = {
     ],
     cliente: [
         { path: 'products/ViewProducts', display: 'Productos' },
-        { path: 'user/Profile', display: 'Ordenes' },
+        { path: 'order/Orders', display: 'Ordenes' },
         { path: 'order/CreateOrder', display: 'Crear Orden' },
         { path: '#', display: 'Logout', isLogout: true }
     ],

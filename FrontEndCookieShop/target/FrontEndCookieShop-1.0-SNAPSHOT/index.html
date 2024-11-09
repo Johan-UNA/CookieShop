@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>JSP - Hello World</title>
+    <title>Cookie Shop - Inicio</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <body>
 
-<a href="admin/ViewSolicitudes.html"> Solicitudes</a><br>
-<a href="products/ViewProducts.html"> Productos</a><br>
-<a href="products/ViewUpload.html"> Subir Productos</a><br>
-<a href="order/CreateOrder.html"> Crear Orden</a><br>
-<a href="login/ViewLogin.html"> Login</a><br>
-<a href="login/ViewDatos.html"> Datos</a><br>
-<a href="invoice/ViewFactura.html"> Factura</a>
-<br>
-<button type="button" onclick="window.location.href='login/ViewRegister.html?type=usuario'">Registro Usuario</button>
+<div class="container mt-4">
+    <h1>Bienvenido a Cookie Shop</h1>
+    <p>Seleccione una de las opciones a continuación para gestionar el sistema.</p>
+
+    <div class="list-group">
+        <a href="admin/ViewSolicitudes.html" class="list-group-item list-group-item-action">Solicitudes</a>
+        <a href="products/ViewProducts.html" class="list-group-item list-group-item-action">Productos</a>
+        <a href="products/ViewUpload.html" class="list-group-item list-group-item-action">Subir Productos</a>
+        <a href="order/CreateOrder.html" class="list-group-item list-group-item-action">Crear Orden</a>
+        <a href="order/Orders.html" class="list-group-item list-group-item-action">Ver Órdenes</a>
+        <a href="login/ViewLogin.html" class="list-group-item list-group-item-action">Login</a>
+        <a href="login/ViewDatos.html" class="list-group-item list-group-item-action">Datos</a>
+        <a href="invoice/ViewFactura.html" class="list-group-item list-group-item-action">Factura</a>
+    </div>
+
+    <button type="button" class="btn btn-primary mt-3" onclick="window.location.href='login/ViewRegister.html?type=usuario'">Registro Usuario</button>
+</div>
+
 <script src="js/navBar.js"></script>
 </body>
 </html>
