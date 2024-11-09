@@ -49,6 +49,19 @@ public class ProductController {
         return new ProductResponse(productos, purchasedProductIds);
     }
 
+    @GetMapping("/order")
+    public List<ProductoDTO> getProducts() {
+        List<ProductoDTO> productos = service.productoDTOS();
+
+        for (ProductoDTO producto : productos) {
+            for (Fotoproducto foto : producto.getFotoproductos()) {
+                foto.setFoto("/uploads/" + foto.getFoto());
+            }
+        }
+
+        return productos;
+    }
+
 
     @GetMapping("/images/{filename}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {

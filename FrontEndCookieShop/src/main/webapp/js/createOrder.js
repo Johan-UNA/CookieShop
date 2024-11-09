@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTotal();
 
     function fetchProducts() {
-        fetch("http://localhost:8080/api/products")
+        fetch("http://localhost:8080/api/products/order")
             .then(response => response.json())
             .then(fetchedProducts => {
                 products = fetchedProducts;
