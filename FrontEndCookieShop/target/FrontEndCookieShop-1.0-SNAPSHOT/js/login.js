@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Inicializa el estado global si no existe en localStorage
     let globalState = JSON.parse(localStorage.getItem('globalState')) || {};
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();

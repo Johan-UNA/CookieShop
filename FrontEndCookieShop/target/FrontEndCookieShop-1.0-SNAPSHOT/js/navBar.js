@@ -5,18 +5,18 @@ let globalState = JSON.parse(localStorage.getItem('globalState')) || {
 
 const roleOptions = {
     administrador: [
-        { path: 'admin/Dashboard', display: 'Dashboard' },
+        { path: 'order/Orders', display: 'Ordenes' },
         { path: 'admin/ViewSolicitudes', display: 'Solicitudes' },
-        { path: 'products/ViewProducts', display: 'Productos' },
+        { path: 'invoice/ViewFactura', display: 'Facturas' },
         { path: '#', display: 'Logout', isLogout: true }
     ],
     dependiente: [
-        { path: 'user/Dashboard', display: 'Dashboard' },
-        { path: 'products/ViewProducts', display: 'Productos' },
+        { path: 'order/Orders', display: 'Ordenes' },
+        { path: 'invoice/ViewFactura', display: 'Facturas' },
         { path: '#', display: 'Logout', isLogout: true }
     ],
     cliente: [
-        { path: 'products/ViewProducts', display: 'Productos' },
+        { path: 'invoice/ViewFactura', display: 'Facturas' },
         { path: 'order/Orders', display: 'Ordenes' },
         { path: 'order/CreateOrder', display: 'Crear Orden' },
         { path: '#', display: 'Logout', isLogout: true }

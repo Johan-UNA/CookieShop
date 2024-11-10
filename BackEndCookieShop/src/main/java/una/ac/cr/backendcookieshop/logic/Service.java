@@ -54,6 +54,7 @@ public class Service {
     public void direccionSave(Direccion direccion) { direccionRepository.save(direccion); }
     public void productoSave(Producto producto) {productoRepository.save(producto); }
     public void fotoProductoSave(Fotoproducto foto) {fotoProductoRepository.save(foto); }
+    public void facturaSave(Factura factura){ facturaRepository.save(factura); }
     public void deleteFotoProducto(Fotoproducto foto) {fotoProductoRepository.delete(foto); }
     public List<Fotoproducto> fotoProductoFindByIdProducto(Producto producto) { return fotoProductoRepository.findByIdProducto(producto); }
     public boolean usuarioExistsById(String idUsuario) { return usuarioRepository.existsByIdUsuario(idUsuario); }

@@ -28,21 +28,21 @@ document.addEventListener("DOMContentLoaded", function() {
         table.classList.add("table", "table-striped");
 
         let tableHeaders = `
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>`;
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>`;
         if (role === "administrador") {
             tableHeaders += `<th>Proveedor</th>`;
         }
         tableHeaders += `
-                <th>Fecha Entrega</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Detalles</th>
-            </tr>
-        </thead>
-    `;
+                    <th>Fecha Entrega</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Detalles</th>
+                </tr>
+            </thead>
+        `;
         table.innerHTML = tableHeaders;
 
         const tbody = document.createElement("tbody");
@@ -50,24 +50,24 @@ document.addEventListener("DOMContentLoaded", function() {
             const row = document.createElement("tr");
 
             row.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.cliente.nombre} ${order.cliente.apellido}</td>
-        `;
+                <td>${order.id}</td>
+                <td>${order.cliente.nombre} ${order.cliente.apellido}</td>
+            `;
             if (role === "administrador") {
                 row.innerHTML += `<td>${order.nombreUsuario || "No asignado"}</td>`;
             }
             row.innerHTML += `
-            <td>${new Date(order.fechaEntrega).toLocaleDateString()}</td>
-            <td>$${order.total.toFixed(2)}</td>
-            <td>${order.estado}</td>
-            <td>
-                <button class="btn btn-primary btn-sm ver-orden" data-id="${order.id}">Ver</button>
-            </td>
-        `;
+                <td>${new Date(order.fechaEntrega).toLocaleDateString()}</td>
+                <td>$${order.total.toFixed(2)}</td>
+                <td>${order.estado}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm ver-orden" data-id="${order.id}">Ver</button>
+                </td>
+            `;
 
             if (role === "dependiente" && !["cancelado", "entregado"].includes(order.estado.toLowerCase())) {
                 const statusCell = document.createElement("td");
-                const statusSelect = renderStatusSelect(order.id, order.estado);
+                const statusSelect = renderStatusSelect(order, order.estado);
                 statusCell.appendChild(statusSelect);
                 row.appendChild(statusCell);
             } else {
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return options;
     }
 
-    function renderStatusSelect(orderId, currentStatus) {
+    function renderStatusSelect(order, currentStatus) {
         const select = document.createElement("select");
         select.classList.add("form-control");
 
@@ -129,16 +129,32 @@ document.addEventListener("DOMContentLoaded", function() {
 
         select.addEventListener("change", () => {
             const newStatus = select.value;
-            if (newStatus) {
-                updateOrderStatus(orderId, newStatus);
+            if (newStatus === "cancelado") {
+                showCancellationModal(order.id, newStatus, order.medioPago);
+            } else {
+                updateOrderStatus(order.id, newStatus);
             }
         });
 
         return select;
     }
 
+    function showCancellationModal(orderId, newStatus, paymentMethod) {
+        let reasons = [];
+        switch (paymentMethod) {
+            case "Tarjeta":
+                reasons = ["Producto insuficiente", "Método de pago inválido", "Solicitado por el cliente"];
+                break;
+            case "Sinpe Movil":
+                reasons = ["Producto insuficiente", "Pago no recibido", "Solicitado por el cliente"];
+                break;
+            case "Efectivo":
+            default:
+                reasons = ["Producto insuficiente", "Solicitado por el cliente"];
+        }
 
-    function showCancellationModal(orderId, newStatus) {
+        const reasonOptions = reasons.map(reason => `<option value="${reason}">${reason}</option>`).join('');
+
         const modalContent = `
             <div class="modal fade" id="cancellationModal" tabindex="-1" aria-labelledby="cancellationModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -149,10 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         </div>
                         <div class="modal-body">
                             <select id="cancellationReason" class="form-control">
-                                <option value="Producto insuficiente">Producto insuficiente</option>
-                                <option value="Método de pago inválido">Método de pago inválido (solo tarjeta de crédito)</option>
-                                <option value="Pago no recibido">Pago no recibido (solo transferencia o sinpe)</option>
-                                <option value="Solicitado por el cliente">Solicitado por el cliente</option>
+                                ${reasonOptions}
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -186,13 +199,38 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then(() => {
-                alert("Estado de la orden actualizado.");
+                showAlertModal("Estado de la orden actualizado.");
                 fetchOrders();
             })
             .catch(error => {
                 console.error("Error al actualizar el estado de la orden:", error);
-                alert("Error al actualizar el estado de la orden.");
+                showAlertModal("Error al actualizar el estado de la orden.");
             });
+    }
+
+    function showAlertModal(message) {
+        const modalContent = `
+            <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="alertModalLabel">Notificación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">${message}</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalContent);
+        const alertModal = new bootstrap.Modal(document.getElementById("alertModal"));
+        alertModal.show();
+        alertModal._element.addEventListener('hidden.bs.modal', () => {
+            document.getElementById("alertModal").remove();
+        });
     }
 
     function viewOrderDetails(orderId) {
@@ -213,54 +251,51 @@ document.addEventListener("DOMContentLoaded", function() {
         title.textContent = "Detalle de Orden";
         document.getElementById("orders-container").innerHTML = "";
 
+        const fechaEntrega = new Date(order.fechaEntrega);
+        const fechaEntregaFormateada = fechaEntrega.toLocaleDateString() + " " + fechaEntrega.toLocaleTimeString();
+
         container.innerHTML = `
-            <div class="invoice border p-4">
-                <h2 class="text-center">Detalle de Orden</h2>
-                <div class="details mb-4">
-                    <strong>Cliente:</strong> ${order.cliente.nombre} ${order.cliente.apellido}<br>
-                    <strong>Fecha de Entrega:</strong> ${new Date(order.fechaEntrega).toLocaleDateString()}<br>
-                    <strong>Total:</strong> $${order.total.toFixed(2)}<br>
-                    <strong>Estado:</strong> ${order.estado}<br>
-                </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Descripción</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${order.detalleordens.map(item => `
-                            <tr>
-                                <td>${item.nombreProducto}</td>
-                                <td>${item.descripcionProducto}</td>
-                                <td>${item.cantidad}</td>
-                                <td>$${item.precioUnitario.toFixed(2)}</td>
-                                <td>$${item.subtotal.toFixed(2)}</td>
-                            </tr>
-                        `).join("")}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" class="text-end font-weight-bold">Total:</td>
-                            <td>$${order.total.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" class="text-end font-weight-bold">Impuesto (13%):</td>
-                            <td>$${(order.total * 0.13).toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" class="text-end font-weight-bold">Total con Impuesto:</td>
-                            <td>$${(order.total * 1.13).toFixed(2)}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button class="btn btn-secondary mt-3" id="back-to-orders">Volver a la lista de órdenes</button>
+        <div class="order-details border p-4">
+            
+            <div class="details mb-4">
+                <strong>Cliente:</strong> ${order.cliente.nombre} ${order.cliente.apellido}<br>
+                <strong>Fecha de Entrega:</strong> ${fechaEntregaFormateada}<br>
+                <strong>Estado:</strong> ${order.estado}<br>
+                ${order.estado === "cancelado" ? `<strong>Motivo de Cancelación:</strong> ${order.motivoCancelacion}<br>` : ''}
+                ${order.nombreUsuario ? `<strong>Proveedor Asignado:</strong> ${order.nombreUsuario}<br>` : ''}
             </div>
-        `;
+
+            <h3>Productos en la Orden</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${order.detalleordens.map(item => `
+                        <tr>
+                            <td>${item.nombreProducto}</td>
+                            <td>${item.descripcionProducto}</td>
+                            <td>${item.cantidad}</td>
+                            <td>$${item.precioUnitario.toFixed(2)}</td>
+                            <td>$${item.subtotal.toFixed(2)}</td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+
+            <div class="total mb-3">
+                <strong>Total:</strong> $${order.total.toFixed(2)}<br>
+            </div>
+
+            <button class="btn btn-secondary mt-3" id="back-to-orders">Volver a la lista de órdenes</button>
+        </div>
+    `;
 
         document.getElementById("back-to-orders").addEventListener("click", fetchOrders);
     }

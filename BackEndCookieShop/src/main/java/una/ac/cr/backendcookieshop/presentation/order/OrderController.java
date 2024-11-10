@@ -12,8 +12,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/api/order")
@@ -88,6 +86,12 @@ public class OrderController {
 
         order.setEstado(newStatus);
         service.ordenSave(order);
+        if("entregado".equals(newStatus)){
+            Factura factura = new Factura();
+            factura.setIdOrden(order);
+            factura.setFechaCreacion(Instant.now().minus(Duration.ofHours(6)));
+            service.facturaSave(factura);
+        }
 
         return ResponseEntity.ok(Collections.singletonMap("message", "Estado de la orden actualizado correctamente"));
     }

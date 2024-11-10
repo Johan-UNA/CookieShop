@@ -1,0 +1,37 @@
+body {
+    background: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 5% auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-container .btn {
+    width: 100%;
+}
+
+.form-footer {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.form-footer button {
+    width: 48%;
+    margin: 0 1%;
+}
+
+#errorMessage {
+    text-align: center;
+    margin-top: 15px;
+}

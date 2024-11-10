@@ -84,12 +84,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const impuestoPorcentaje = 0.13;
         const totalConImpuesto = factura.orden.total * (1 + impuestoPorcentaje);
+        const logoUrl = `${window.location.origin}/FrontEndCookieShop-1.0-SNAPSHOT/img/logo.jpeg`;
 
         container.innerHTML = `
         <div class="invoice border p-4">
             <h1 class="text-center">Factura</h1>
             <div class="text-center mb-4">
-                <img src="ruta/al/logo.png" alt="Logo" style="width: 50px;">
+                <img src="${logoUrl}" alt="Logo" style="width: 50px;">
                 <h2>Cookie Shop</h2>
             </div>
             <div class="details mb-4">
