@@ -28,21 +28,21 @@ document.addEventListener("DOMContentLoaded", function() {
         table.classList.add("table", "table-striped");
 
         let tableHeaders = `
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>`;
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>`;
         if (role === "administrador") {
             tableHeaders += `<th>Proveedor</th>`;
         }
         tableHeaders += `
-                    <th>Fecha Entrega</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Detalles</th>
-                </tr>
-            </thead>
-        `;
+                <th>Fecha Entrega</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+    `;
         table.innerHTML = tableHeaders;
 
         const tbody = document.createElement("tbody");
@@ -50,24 +50,24 @@ document.addEventListener("DOMContentLoaded", function() {
             const row = document.createElement("tr");
 
             row.innerHTML = `
-                <td>${order.id}</td>
-                <td>${order.cliente.nombre} ${order.cliente.apellido}</td>
-            `;
+            <td>${order.id}</td>
+            <td>${order.cliente.nombre} ${order.cliente.apellido}</td>
+        `;
             if (role === "administrador") {
                 row.innerHTML += `<td>${order.nombreUsuario || "No asignado"}</td>`;
             }
             row.innerHTML += `
-                <td>${new Date(order.fechaEntrega).toLocaleDateString()}</td>
-                <td>$${order.total.toFixed(2)}</td>
-                <td>${order.estado}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm ver-orden" data-id="${order.id}">Ver</button>
-                </td>
-            `;
+            <td>${new Date(order.fechaEntrega).toLocaleDateString()}</td>
+            <td>$${order.total.toFixed(2)}</td>
+            <td>${order.estado}</td>
+            <td>
+                <button class="btn btn-primary btn-sm ver-orden" data-id="${order.id}">Ver</button>
+            </td>
+        `;
 
-            if (role === "dependiente" && !["Cancelado", "Entregada"].includes(order.estado)) {
+            if (role === "dependiente" && !["cancelado", "entregado"].includes(order.estado.toLowerCase())) {
                 const statusCell = document.createElement("td");
-                const statusSelect = createStatusSelect(order.estado, order.id);
+                const statusSelect = renderStatusSelect(order.id, order.estado);
                 statusCell.appendChild(statusSelect);
                 row.appendChild(statusCell);
             } else {
@@ -88,33 +88,11 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function createStatusSelect(currentStatus, orderId) {
-        const select = document.createElement("select");
-        select.classList.add("form-control", "form-control-sm");
-        select.dataset.orderId = orderId;
-
-        const statusOptions = getStatusOptions(currentStatus);
-        statusOptions.forEach(option => {
-            const opt = document.createElement("option");
-            opt.value = option.value;
-            opt.textContent = option.label;
-            select.appendChild(opt);
-        });
-
-        select.addEventListener("change", function() {
-            const newStatus = this.value;
-            if (newStatus === "Cancelado") {
-                showCancellationModal(orderId, newStatus);
-            } else {
-                updateOrderStatus(orderId, newStatus);
-            }
-        });
-
-        return select;
-    }
-
     function getStatusOptions(currentStatus) {
-        const options = [];
+        const options = [
+            { value: "", label: "Seleccionar", disabled: true } // Opción predeterminada
+        ];
+
         switch (currentStatus) {
             case "pendiente":
                 options.push({ value: "en proceso", label: "En Proceso" });
@@ -133,6 +111,32 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         return options;
     }
+
+    function renderStatusSelect(orderId, currentStatus) {
+        const select = document.createElement("select");
+        select.classList.add("form-control");
+
+        const options = getStatusOptions(currentStatus);
+        options.forEach(option => {
+            const opt = document.createElement("option");
+            opt.value = option.value;
+            opt.textContent = option.label;
+            if (option.disabled) opt.disabled = true;
+            select.appendChild(opt);
+        });
+
+        select.value = "";
+
+        select.addEventListener("change", () => {
+            const newStatus = select.value;
+            if (newStatus) {
+                updateOrderStatus(orderId, newStatus);
+            }
+        });
+
+        return select;
+    }
+
 
     function showCancellationModal(orderId, newStatus) {
         const modalContent = `
