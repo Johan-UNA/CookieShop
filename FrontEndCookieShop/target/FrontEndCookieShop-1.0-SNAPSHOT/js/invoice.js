@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <th>ID Factura</th>
                     <th>Fecha</th>
                     <th>Cliente</th>
-                    <th>Usuario</th>
+                    <th>Proovedor</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

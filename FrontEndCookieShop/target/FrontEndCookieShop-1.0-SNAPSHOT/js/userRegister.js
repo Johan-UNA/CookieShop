@@ -10,9 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
         formContainer.innerHTML = ''; // Clear previous form
 
         const commonFields = `
-            <div class="mb-3">
-                <label class="form-label">Proovedor</label>
-            </div>
+           
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" required>
@@ -32,9 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
 
         const specificFields = type === 'cliente' ? `
-             <div class="mb-3">
-                <label class="form-label">Cliente</label>
-            </div>
+            
             <div class="mb-3">
                 <label for="idCliente" class="form-label">Identificación:</label>
                 <input type="text" id="idCliente" name="idCliente" class="form-control" required>
