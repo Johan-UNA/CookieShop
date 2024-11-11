@@ -121,11 +121,15 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> getProduct(@PathVariable Integer id) {
+    public ResponseEntity<ProductoDTO> getProduct(@PathVariable Integer id) {
         Optional<Producto> productOpt = service.productoFindById(id);
-        return productOpt.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(null));
+
+        return productOpt
+                .map(product -> {
+                    ProductoDTO productoDTO = service.convertToProductoDTO(product);
+                    return ResponseEntity.ok(productoDTO);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @PutMapping("/{id}/update")
