@@ -11,6 +11,7 @@ const roleOptions = {
         { path: '#', display: 'Logout', isLogout: true }
     ],
     dependiente: [
+        { path: 'products/ViewUpload', display: 'Crear Producto' },
         { path: 'order/Orders', display: 'Ordenes' },
         { path: 'invoice/ViewFactura', display: 'Facturas' },
         { path: '#', display: 'Logout', isLogout: true }
